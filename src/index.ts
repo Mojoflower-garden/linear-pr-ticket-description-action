@@ -14,7 +14,7 @@ export async function run() {
     let messages: string[];
 
     try {
-      console.log("FETCHING pulls");
+      console.log("FETCHING pulls 123");
       // Fetch the pull request details including commits
       const { data: pullRequest } = await octokit.rest.pulls.get({
         owner: context.repo.owner,
