@@ -33822,7 +33822,6 @@ async function run() {
             const matches = findMatchingStrings(commitHeadlines !== null && commitHeadlines !== void 0 ? commitHeadlines : []);
             if (matches.length > 0) {
                 const fencedSection = `
-        ${pr.body}}\n
 ## Linear Tickets Found 2\n\n
 
 <!-- === LINEAR TICKETS FENCE START === -->\n

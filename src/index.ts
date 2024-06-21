@@ -109,7 +109,6 @@ export async function run() {
 
       if (matches.length > 0) {
         const fencedSection = `
-        ${pr.body}}\n
 ## Linear Tickets Found 2\n\n
 
 <!-- === LINEAR TICKETS FENCE START === -->\n
