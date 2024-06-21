@@ -34,7 +34,6 @@ function runGHCommand(command: string): Promise<string> {
 }
 
 function findMatchingStrings(strings: string[], regex: RegExp): string[] {
-  // Use flatMap to collect all matches from all strings
   return strings.flatMap((str) => {
     const matches = str.match(regex);
     return matches ? matches : [];

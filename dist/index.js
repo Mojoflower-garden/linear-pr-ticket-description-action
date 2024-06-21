@@ -24,7 +24,6 @@ function runGHCommand(command) {
     });
 }
 function findMatchingStrings(strings, regex) {
-    // Use flatMap to collect all matches from all strings
     return strings.flatMap((str) => {
         const matches = str.match(regex);
         return matches ? matches : [];
@@ -33822,13 +33821,14 @@ async function run() {
     const ticketRegex = (0, core_1.getInput)('ticket-regex');
     const octokit = (0, github_1.getOctokit)(token);
     const pr = github_1.context.payload.pull_request;
+    console.log('REGEX:', ticketRegex);
     try {
         if (!pr) {
             throw new Error('This action can only be run on Pull Requests');
         }
         try {
             const commitHeadlines = await (0, helpers_1.listCommits)(pr.number);
-            const regexPattern = ticketRegex !== null && ticketRegex !== void 0 ? ticketRegex : 'mojo-\\d+'; // Example regex pattern, adjust as needed
+            const regexPattern = ticketRegex; // Example regex pattern, adjust as needed
             const regex = new RegExp(regexPattern, 'gi');
             const prDescription = (0, helpers_1.generatePRDescription)(commitHeadlines !== null && commitHeadlines !== void 0 ? commitHeadlines : [], regex);
             const fencedSection = `

@@ -1,16 +1,19 @@
-name: "Linear ids in pr description"
-description: "Add linear ids from commits into description"
-author: "Turtle"
+name: 'Linear ids in pr description'
+description: 'Add linear ids from commits into description'
+author: 'Turtle'
 
 inputs:
   gh-token:
-    description: "The GitHub token for authentication."
+    description: 'The GitHub token for authentication.'
+    required: true
+  ticket-regex:
+    description: 'The regex for the ticket ids that will be found in commits and inserted into the description.'
     required: true
 
 runs:
-  using: "node20"
-  main: "dist/index.js"
+  using: 'node20'
+  main: 'dist/index.js'
 
 branding:
-  icon: "activity"
-  color: "green"
+  icon: 'activity'
+  color: 'green'

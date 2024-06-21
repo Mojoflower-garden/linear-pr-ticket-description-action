@@ -12,6 +12,8 @@ export async function run() {
   const octokit = getOctokit(token);
   const pr = context.payload.pull_request;
 
+  console.log('REGEX:', ticketRegex);
+
   try {
     if (!pr) {
       throw new Error('This action can only be run on Pull Requests');
@@ -20,7 +22,7 @@ export async function run() {
     try {
       const commitHeadlines = await listCommits(pr.number);
 
-      const regexPattern = ticketRegex ?? 'mojo-\\d+'; // Example regex pattern, adjust as needed
+      const regexPattern = ticketRegex; // Example regex pattern, adjust as needed
       const regex = new RegExp(regexPattern, 'gi');
 
       const prDescription = generatePRDescription(commitHeadlines ?? [], regex);
