@@ -2,6 +2,26 @@ import { getInput, setFailed } from "@actions/core";
 import { context, getOctokit } from "@actions/github";
 import { exec } from "child_process";
 
+interface Author {
+  email: string;
+  id: string;
+  login: string;
+  name: string;
+}
+
+interface Commit {
+  authoredDate: string;
+  authors: Author[];
+  committedDate: string;
+  messageBody: string;
+  messageHeadline: string;
+  oid: string;
+}
+
+interface CommitsResponse {
+  commits: Commit[];
+}
+
 // Function to run a GitHub CLI command
 function runGHCommand(command: string): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -15,11 +35,14 @@ function runGHCommand(command: string): Promise<string> {
   });
 }
 
-// Example usage: List issues
-async function listIssues(prNumber: number) {
+async function listCommits(prNumber: number) {
   try {
-    const issues = await runGHCommand(`gh pr view ${prNumber} --json commits`);
-    console.log("Issues:", issues);
+    const result = await runGHCommand(`gh pr view ${prNumber} --json commits`);
+    const data: CommitsResponse = JSON.parse(result);
+    console.log(
+      "Commit Headlines:",
+      data.commits.map((c) => c.messageHeadline)
+    );
   } catch (error) {
     console.error("Error:", error);
   }
@@ -40,7 +63,7 @@ export async function run() {
     try {
       console.log("FETCHING pulls");
 
-      await listIssues(pr.number);
+      await listCommits(pr.number);
       // Fetch the pull request details including commits
       //   const { data: pullRequest } = await octokit.rest.pulls.get({
       //     owner: context.repo.owner,
