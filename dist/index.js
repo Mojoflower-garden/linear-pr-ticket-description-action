@@ -33780,7 +33780,14 @@ async function listCommits(prNumber) {
 }
 function findMatchingStrings(strings) {
     const regex = /mojo-\d+/i; // Regular expression to match "MOJO-%number%" (case insensitive)
-    return strings.filter((str) => regex.test(str));
+    let matches = [];
+    strings.forEach((str) => {
+        const found = str.match(regex);
+        if (found) {
+            matches = matches.concat(found);
+        }
+    });
+    return matches;
 }
 async function run() {
     var _a;
