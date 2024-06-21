@@ -24,10 +24,13 @@ function runGHCommand(command) {
     });
 }
 function findMatchingStrings(strings, regex) {
-    return strings.flatMap((str) => {
+    const matchingStrings = strings
+        .flatMap((str) => {
         const matches = str.match(regex);
         return matches ? matches : [];
-    });
+    })
+        .map((match) => match.toUpperCase());
+    return Array.from(new Set(matchingStrings));
 }
 async function listCommits(prNumber) {
     try {

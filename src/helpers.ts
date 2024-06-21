@@ -34,10 +34,13 @@ function runGHCommand(command: string): Promise<string> {
 }
 
 function findMatchingStrings(strings: string[], regex: RegExp): string[] {
-  return strings.flatMap((str) => {
-    const matches = str.match(regex);
-    return matches ? matches : [];
-  });
+  const matchingStrings = strings
+    .flatMap((str) => {
+      const matches = str.match(regex);
+      return matches ? matches : [];
+    })
+    .map((match) => match.toUpperCase());
+  return Array.from(new Set(matchingStrings));
 }
 
 async function listCommits(prNumber: number) {
