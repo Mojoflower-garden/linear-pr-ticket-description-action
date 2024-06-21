@@ -1,6 +1,67 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 3308:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.listCommits = listCommits;
+exports.generatePRDescription = generatePRDescription;
+exports.updatePRDescription = updatePRDescription;
+const child_process_1 = __nccwpck_require__(2081);
+// Function to run a GitHub CLI command
+function runGHCommand(command) {
+    return new Promise((resolve, reject) => {
+        (0, child_process_1.exec)(command, (error, stdout, stderr) => {
+            if (error) {
+                reject(`error: ${stderr}`);
+                return;
+            }
+            resolve(stdout);
+        });
+    });
+}
+async function listCommits(prNumber) {
+    try {
+        const result = await runGHCommand(`gh pr view ${prNumber} --json commits` // Note there is probably some limit to how many commits this returns. But I don't know where that is documented.
+        );
+        const data = JSON.parse(result);
+        return data.commits.map((c) => c.messageHeadline);
+    }
+    catch (error) {
+        console.error('Error:', error);
+    }
+}
+function findMatchingStrings(strings, regex) {
+    // Use flatMap to collect all matches from all strings
+    return strings.flatMap((str) => {
+        const matches = str.match(regex);
+        return matches ? matches : [];
+    });
+}
+function generatePRDescription(strings, matchRegex) {
+    const matches = findMatchingStrings(strings, matchRegex);
+    if (matches.length === 0) {
+        return 'No MOJO references found in this pull request.';
+    }
+    // Join matches with comma and space
+    const description = `ref ${matches.join(', ')}`;
+    return description;
+}
+function updatePRDescription(currentDescription, newSection) {
+    // Remove the existing "Linear Tickets Found" section
+    const regex = /<!-- === LINEAR TICKETS FENCE START === -->[\s\S]*?<!-- === LINEAR TICKETS FENCE END === -->/gi;
+    const cleanedDescription = currentDescription.replace(regex, '');
+    // Concatenate cleaned description with new section
+    const updatedDescription = cleanedDescription.trim() + '\n\n' + newSection.trim();
+    return updatedDescription.trim();
+}
+
+
+/***/ }),
+
 /***/ 8240:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -33754,94 +33815,42 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = run;
 const core_1 = __nccwpck_require__(6733);
 const github_1 = __nccwpck_require__(3695);
-const child_process_1 = __nccwpck_require__(2081);
-// Function to run a GitHub CLI command
-function runGHCommand(command) {
-    return new Promise((resolve, reject) => {
-        (0, child_process_1.exec)(command, (error, stdout, stderr) => {
-            if (error) {
-                reject(`error: ${stderr}`);
-                return;
-            }
-            resolve(stdout);
-        });
-    });
-}
-async function listCommits(prNumber) {
-    try {
-        const result = await runGHCommand(`gh pr view ${prNumber} --json commits` // Note there is probably some limit to how many commits this returns. But I don't know where that is documented.
-        );
-        const data = JSON.parse(result);
-        return data.commits.map((c) => c.messageHeadline);
-    }
-    catch (error) {
-        console.error("Error:", error);
-    }
-}
-function findMatchingStrings(strings) {
-    const regex = /mojo-\d+/gi; // Regular expression to match "MOJO-%number%" (case insensitive)
-    // Use flatMap to collect all matches from all strings
-    return strings.flatMap((str) => {
-        const matches = str.match(regex);
-        return matches ? matches : [];
-    });
-}
-function generatePRDescription(strings) {
-    const matches = findMatchingStrings(strings);
-    if (matches.length === 0) {
-        return "No MOJO references found in this pull request.";
-    }
-    // Join matches with comma and space
-    const description = `ref ${matches.join(", ")}`;
-    return description;
-}
-function updatePRDescription(currentDescription, newSection) {
-    // Remove the existing "Linear Tickets Found" section
-    const regex = /<!-- === LINEAR TICKETS FENCE START === -->[\s\S]*?<!-- === LINEAR TICKETS FENCE END === -->/gi;
-    const cleanedDescription = currentDescription.replace(regex, "");
-    console.log("CLEANeD description", cleanedDescription);
-    // Concatenate cleaned description with new section
-    const updatedDescription = cleanedDescription.trim() + "\n\n" + newSection.trim();
-    return updatedDescription.trim();
-}
+const helpers_1 = __nccwpck_require__(3308);
 async function run() {
     var _a, _b;
-    const token = (0, core_1.getInput)("gh-token");
+    const token = (0, core_1.getInput)('gh-token');
+    const ticketRegex = (0, core_1.getInput)('ticket-regex');
     const octokit = (0, github_1.getOctokit)(token);
     const pr = github_1.context.payload.pull_request;
     try {
         if (!pr) {
-            throw new Error("This action can only be run on Pull Requests");
+            throw new Error('This action can only be run on Pull Requests');
         }
-        let messages;
         try {
-            const commitHeadlines = await listCommits(pr.number);
-            const matches = findMatchingStrings(commitHeadlines !== null && commitHeadlines !== void 0 ? commitHeadlines : []);
-            if (matches.length > 0) {
-                const fencedSection = `
+            const commitHeadlines = await (0, helpers_1.listCommits)(pr.number);
+            const regexPattern = ticketRegex !== null && ticketRegex !== void 0 ? ticketRegex : 'mojo-\\d+'; // Example regex pattern, adjust as needed
+            const regex = new RegExp(regexPattern, 'gi');
+            const prDescription = (0, helpers_1.generatePRDescription)(commitHeadlines !== null && commitHeadlines !== void 0 ? commitHeadlines : [], regex);
+            const fencedSection = `
         <!-- === LINEAR TICKETS FENCE START === -->\n
-
-## Linear Tickets Found\n\n
-
-${generatePRDescription(matches)}\n
-<!-- === LINEAR TICKETS FENCE END === -->
-`;
-                await octokit.rest.issues.update({
-                    issue_number: github_1.context.issue.number,
-                    owner: github_1.context.repo.owner,
-                    repo: github_1.context.repo.repo,
-                    body: updatePRDescription((_a = pr.body) !== null && _a !== void 0 ? _a : "", fencedSection),
-                });
-            }
+        ## Linear Tickets Found\n\n
+        ${prDescription}\n
+        <!-- === LINEAR TICKETS FENCE END === -->
+        `;
+            await octokit.rest.issues.update({
+                issue_number: github_1.context.issue.number,
+                owner: github_1.context.repo.owner,
+                repo: github_1.context.repo.repo,
+                body: (0, helpers_1.updatePRDescription)((_a = pr.body) !== null && _a !== void 0 ? _a : '', fencedSection),
+            });
         }
         catch (error) {
-            console.error("Error fetching commit messages:", error === null || error === void 0 ? void 0 : error.message);
+            console.error('Error fetching commit messages:', error === null || error === void 0 ? void 0 : error.message);
             throw error;
         }
-        // console.log("Commit messages in the pull request:", messages);
     }
     catch (error) {
-        (0, core_1.setFailed)((_b = error === null || error === void 0 ? void 0 : error.message) !== null && _b !== void 0 ? _b : "Unknown error");
+        (0, core_1.setFailed)((_b = error === null || error === void 0 ? void 0 : error.message) !== null && _b !== void 0 ? _b : 'Unknown error');
     }
 }
 run();
