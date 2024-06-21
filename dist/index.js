@@ -31857,6 +31857,14 @@ module.exports = require("buffer");
 
 /***/ }),
 
+/***/ 2081:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("child_process");
+
+/***/ }),
+
 /***/ 6206:
 /***/ ((module) => {
 
@@ -33746,6 +33754,29 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = run;
 const core_1 = __nccwpck_require__(6733);
 const github_1 = __nccwpck_require__(3695);
+const child_process_1 = __nccwpck_require__(2081);
+// Function to run a GitHub CLI command
+function runGHCommand(command) {
+    return new Promise((resolve, reject) => {
+        (0, child_process_1.exec)(command, (error, stdout, stderr) => {
+            if (error) {
+                reject(`error: ${stderr}`);
+                return;
+            }
+            resolve(stdout);
+        });
+    });
+}
+// Example usage: List issues
+async function listIssues(prNumber) {
+    try {
+        const issues = await runGHCommand(`gh pr view ${prNumber} --json commits`);
+        console.log("Issues:", issues);
+    }
+    catch (error) {
+        console.error("Error:", error);
+    }
+}
 async function run() {
     var _a;
     const token = (0, core_1.getInput)("gh-token");
@@ -33757,32 +33788,33 @@ async function run() {
         }
         let messages;
         try {
-            console.log("FETCHING pulls 123");
+            console.log("FETCHING pulls");
+            await listIssues(pr.number);
             // Fetch the pull request details including commits
-            const { data: pullRequest } = await octokit.rest.pulls.get({
-                owner: github_1.context.repo.owner,
-                repo: github_1.context.repo.repo,
-                pull_number: pr.number,
-            });
-            const createdAt = pullRequest.created_at;
-            const baseBranch = pullRequest.head.ref;
-            console.log("FETCHING COMMITS", baseBranch, createdAt);
-            // Fetch commits from the base branch after the pull request was created
-            const { data: commits } = await octokit.rest.repos.listCommits({
-                owner: github_1.context.repo.owner,
-                repo: github_1.context.repo.repo,
-                sha: baseBranch,
-                since: createdAt,
-            });
-            // Filter commits to include only those part of the pull request
-            // Note: this assumes all commits on the branch after the PR creation are part of the PR
-            messages = commits.map((commit) => commit.commit.message);
+            //   const { data: pullRequest } = await octokit.rest.pulls.get({
+            //     owner: context.repo.owner,
+            //     repo: context.repo.repo,
+            //     pull_number: pr.number,
+            //   });
+            //   const createdAt = pullRequest.created_at;
+            //   const baseBranch = pullRequest.head.ref;
+            //   console.log("FETCHING COMMITS", baseBranch, createdAt);
+            //   // Fetch commits from the base branch after the pull request was created
+            //   const { data: commits } = await octokit.rest.repos.listCommits({
+            //     owner: context.repo.owner,
+            //     repo: context.repo.repo,
+            //     sha: baseBranch,
+            //     since: createdAt,
+            //   });
+            //   // Filter commits to include only those part of the pull request
+            //   // Note: this assumes all commits on the branch after the PR creation are part of the PR
+            //   messages = commits.map((commit) => commit.commit.message);
         }
         catch (error) {
             console.error("Error fetching commit messages:", error === null || error === void 0 ? void 0 : error.message);
             throw error;
         }
-        console.log("Commit messages in the pull request:", messages);
+        // console.log("Commit messages in the pull request:", messages);
     }
     catch (error) {
         (0, core_1.setFailed)((_a = error === null || error === void 0 ? void 0 : error.message) !== null && _a !== void 0 ? _a : "Unknown error");
