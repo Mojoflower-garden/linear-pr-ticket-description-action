@@ -33833,8 +33833,10 @@ async function run() {
             const prDescription = (0, helpers_1.generatePRDescription)(commitHeadlines !== null && commitHeadlines !== void 0 ? commitHeadlines : [], regex);
             const fencedSection = `
         <!-- === LINEAR TICKETS FENCE START === -->\n
+        
         ## Linear Tickets Found\n\n
         ${prDescription}\n
+
         <!-- === LINEAR TICKETS FENCE END === -->
         `;
             await octokit.rest.issues.update({

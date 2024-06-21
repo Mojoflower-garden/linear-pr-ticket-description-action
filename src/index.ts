@@ -29,8 +29,10 @@ export async function run() {
 
       const fencedSection = `
         <!-- === LINEAR TICKETS FENCE START === -->\n
+        
         ## Linear Tickets Found\n\n
         ${prDescription}\n
+
         <!-- === LINEAR TICKETS FENCE END === -->
         `;
 
