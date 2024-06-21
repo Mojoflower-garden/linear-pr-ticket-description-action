@@ -33767,11 +33767,11 @@ function runGHCommand(command) {
         });
     });
 }
-// Example usage: List issues
-async function listIssues(prNumber) {
+async function listCommits(prNumber) {
     try {
-        const issues = await runGHCommand(`gh pr view ${prNumber} --json commits`);
-        console.log("Issues:", issues);
+        const result = await runGHCommand(`gh pr view ${prNumber} --json commits`);
+        const data = JSON.parse(result);
+        console.log("Commit Headlines:", data.commits.map((c) => c.messageHeadline));
     }
     catch (error) {
         console.error("Error:", error);
@@ -33789,7 +33789,7 @@ async function run() {
         let messages;
         try {
             console.log("FETCHING pulls");
-            await listIssues(pr.number);
+            await listCommits(pr.number);
             // Fetch the pull request details including commits
             //   const { data: pullRequest } = await octokit.rest.pulls.get({
             //     owner: context.repo.owner,
