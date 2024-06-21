@@ -23,7 +23,7 @@ export async function run() {
       });
 
       const createdAt = pullRequest.created_at;
-      const baseBranch = pullRequest.base.ref;
+      const baseBranch = pullRequest.head.ref;
 
       console.log("FETCHING COMMITS", baseBranch, createdAt);
       // Fetch commits from the base branch after the pull request was created
