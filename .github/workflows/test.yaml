@@ -1,14 +1,19 @@
-name: "Waver"
+name: 'Linear ticket descriptions'
 
 on:
   pull_request:
     types: [opened, reopened]
 
 jobs:
-  wave:
+  ticketDescription:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: ./
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          user-gh-token: ${{ secrets.GITHUB_TOKEN }}
+          gh-token: ${{ secrets.GITHUB_TOKEN }}
+          ticket-regex: "mojo-\\d+"
+          section-title: 'Linear Tickets Found'
+          magic-word: 'ref'
