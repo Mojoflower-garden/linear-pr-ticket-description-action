@@ -28,12 +28,12 @@ export async function run() {
       const prDescription = generatePRDescription(commitHeadlines ?? [], regex);
 
       const fencedSection = `
-        <!-- === LINEAR TICKETS FENCE START === -->\n
-        
-        ## Linear Tickets Found\n\n
-        ${prDescription}\n
+<!-- === LINEAR TICKETS FENCE START === -->\n
 
-        <!-- === LINEAR TICKETS FENCE END === -->
+## Linear Tickets Found\n\n
+${prDescription}\n
+
+<!-- === LINEAR TICKETS FENCE END === -->
         `;
 
       await octokit.rest.issues.update({

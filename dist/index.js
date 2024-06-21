@@ -33832,12 +33832,12 @@ async function run() {
             const regex = new RegExp(regexPattern, 'gi');
             const prDescription = (0, helpers_1.generatePRDescription)(commitHeadlines !== null && commitHeadlines !== void 0 ? commitHeadlines : [], regex);
             const fencedSection = `
-        <!-- === LINEAR TICKETS FENCE START === -->\n
-        
-        ## Linear Tickets Found\n\n
-        ${prDescription}\n
+<!-- === LINEAR TICKETS FENCE START === -->\n
 
-        <!-- === LINEAR TICKETS FENCE END === -->
+## Linear Tickets Found\n\n
+${prDescription}\n
+
+<!-- === LINEAR TICKETS FENCE END === -->
         `;
             await octokit.rest.issues.update({
                 issue_number: github_1.context.issue.number,
