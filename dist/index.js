@@ -33769,7 +33769,7 @@ function runGHCommand(command) {
 }
 async function listCommits(prNumber) {
     try {
-        const result = await runGHCommand(`gh pr view ${prNumber} --limit=2000 --json commits`);
+        const result = await runGHCommand(`gh pr view ${prNumber} --json commits --limit=2000`);
         const data = JSON.parse(result);
         return data.commits.map((c) => c.messageHeadline);
     }
