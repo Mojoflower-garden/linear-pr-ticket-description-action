@@ -59,6 +59,18 @@ function findMatchingStrings(strings: string[]): string[] {
   });
 }
 
+function generatePRDescription(strings: string[]): string {
+  const matches = findMatchingStrings(strings);
+
+  if (matches.length === 0) {
+    return "No MOJO references found in this pull request.";
+  }
+
+  // Join matches with comma and space
+  const description = `ref ${matches.join(", ")}`;
+  return description;
+}
+
 export async function run() {
   console.log("TEST 1");
   const token = getInput("gh-token");
@@ -78,8 +90,19 @@ export async function run() {
       const commitHeadlines = await listCommits(pr.number);
 
       console.log("COMMIT HEADLINES:", commitHeadlines);
-      if (commitHeadlines)
-        console.log("MATCHING:", findMatchingStrings(commitHeadlines));
+      const matches = findMatchingStrings(commitHeadlines ?? []);
+
+      if (matches.length > 0) {
+        const newDescription = `# ================ PR Description Start ===================\n${generatePRDescription(
+          matches
+        )}\n# ================ PR Description End ===================`;
+        await octokit.rest.issues.update({
+          issue_number: context.issue.number,
+          owner: context.repo.owner,
+          repo: context.repo.repo,
+          body: newDescription,
+        });
+      }
       // Fetch the pull request details including commits
       //   const { data: pullRequest } = await octokit.rest.pulls.get({
       //     owner: context.repo.owner,
