@@ -37,15 +37,19 @@ function runGHCommand(command: string): Promise<string> {
 
 async function listCommits(prNumber: number) {
   try {
-    const result = await runGHCommand(`gh pr view ${prNumber} --json commits`);
-    const data: CommitsResponse = JSON.parse(result);
-    console.log(
-      "Commit Headlines:",
-      data.commits.map((c) => c.messageHeadline)
+    const result = await runGHCommand(
+      `gh pr view ${prNumber} --limit=2000 --json commits`
     );
+    const data: CommitsResponse = JSON.parse(result);
+    return data.commits.map((c) => c.messageHeadline);
   } catch (error) {
     console.error("Error:", error);
   }
+}
+
+function findMatchingStrings(strings: string[]): string[] {
+  const regex = /mojo-\d+/i; // Regular expression to match "MOJO-%number%" (case insensitive)
+  return strings.filter((str) => regex.test(str));
 }
 
 export async function run() {
@@ -63,7 +67,11 @@ export async function run() {
     try {
       console.log("FETCHING pulls");
 
-      await listCommits(pr.number);
+      const commitHeadlines = await listCommits(pr.number);
+
+      console.log("COMMIT HEADLINES:", commitHeadlines);
+      if (commitHeadlines)
+        console.log("MATCHING:", findMatchingStrings(commitHeadlines));
       // Fetch the pull request details including commits
       //   const { data: pullRequest } = await octokit.rest.pulls.get({
       //     owner: context.repo.owner,
