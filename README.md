@@ -8,7 +8,7 @@ This action finds all ticket ids in commit headlines that are included in a spec
 
 First, visit your repository's Settings -> Actions -> General, and select 'Read and write permissions' in 'Workflow permissions'.
 
-Then set up a job as below (specifying the version if you want):
+Then set up a job as below (specifying which version of the action you want):
 
 ```yaml
 on:
