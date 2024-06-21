@@ -78,7 +78,6 @@ function updatePRDescription(
   currentDescription: string,
   newSection: string
 ): string {
-  // Remove the existing "Linear Tickets Found" section
   const regex =
     /<!-- === TICKETS FENCE START === -->[\s\S]*?<!-- === TICKETS FENCE END === -->/gi;
   const cleanedDescription = currentDescription.replace(regex, '');

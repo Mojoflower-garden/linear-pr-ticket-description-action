@@ -1,5 +1,5 @@
 {
-  "name": "linear-pr-ticket-description-action",
+  "name": "pr-ticket-description-action",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

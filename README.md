@@ -1,1 +1,1 @@
-# linear-pr-ticket-description-action
+# pr-ticket-description-action
