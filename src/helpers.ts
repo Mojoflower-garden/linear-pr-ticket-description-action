@@ -73,7 +73,7 @@ function generatePRDescription(
   )}`;
   return description;
 }
-// TEST
+
 function updatePRDescription(
   currentDescription: string,
   newSection: string

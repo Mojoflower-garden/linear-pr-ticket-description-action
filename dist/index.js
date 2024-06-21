@@ -53,7 +53,6 @@ function generatePRDescription(strings, matchRegex, magicWord) {
     const description = `${magicWord ? magicWord + ' ' : ''}${matches.join(', ')}`;
     return description;
 }
-// TEST
 function updatePRDescription(currentDescription, newSection) {
     const regex = /<!-- === TICKETS FENCE START === -->[\s\S]*?<!-- === TICKETS FENCE END === -->/gi;
     const cleanedDescription = currentDescription.replace(regex, '');
