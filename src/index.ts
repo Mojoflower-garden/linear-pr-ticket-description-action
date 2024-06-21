@@ -38,7 +38,7 @@ function runGHCommand(command: string): Promise<string> {
 async function listCommits(prNumber: number) {
   try {
     const result = await runGHCommand(
-      `gh pr view ${prNumber} --json commits --limit=2000`
+      `gh pr view ${prNumber} --json commits` // Note there is probably some limit to how many commits this returns. But I don't know where that is documented.
     );
     const data: CommitsResponse = JSON.parse(result);
     return data.commits.map((c) => c.messageHeadline);
