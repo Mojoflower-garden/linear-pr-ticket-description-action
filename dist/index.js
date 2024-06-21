@@ -54,7 +54,6 @@ function generatePRDescription(strings, matchRegex, magicWord) {
     return description;
 }
 function updatePRDescription(currentDescription, newSection) {
-    // Remove the existing "Linear Tickets Found" section
     const regex = /<!-- === TICKETS FENCE START === -->[\s\S]*?<!-- === TICKETS FENCE END === -->/gi;
     const cleanedDescription = currentDescription.replace(regex, '');
     // Concatenate cleaned description with new section

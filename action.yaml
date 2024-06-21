@@ -1,5 +1,5 @@
-name: 'Linear ids in pr description'
-description: 'Add linear ids from commits into description'
+name: 'Ticket ids from commit in pr description'
+description: 'Add ticket ids found in commits included in a pr into description'
 author: 'Turtle'
 
 inputs:
