@@ -48,20 +48,19 @@ async function listCommits(prNumber: number) {
 }
 
 function findMatchingStrings(strings: string[]): string[] {
-  const regex = /mojo-\d+/i; // Regular expression to match "MOJO-%number%" (case insensitive)
+  const regex = /mojo-\d+/gi; // Regular expression to match "MOJO-%number%" (case insensitive)
   let matches: string[] = [];
 
-  strings.forEach((str) => {
-    const found = str.match(regex);
-    if (found) {
-      matches = matches.concat(found);
-    }
+  // Use flatMap to collect all matches from all strings
+  return strings.flatMap((str) => {
+    const matches = str.match(regex);
+    console.log("MATCHES:", str, matches);
+    return matches ? matches : [];
   });
-
-  return matches;
 }
 
 export async function run() {
+  console.log("TEST 1");
   const token = getInput("gh-token");
   const octokit = getOctokit(token);
   const pr = context.payload.pull_request;

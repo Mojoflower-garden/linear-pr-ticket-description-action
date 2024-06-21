@@ -33779,18 +33779,18 @@ async function listCommits(prNumber) {
     }
 }
 function findMatchingStrings(strings) {
-    const regex = /mojo-\d+/i; // Regular expression to match "MOJO-%number%" (case insensitive)
+    const regex = /mojo-\d+/gi; // Regular expression to match "MOJO-%number%" (case insensitive)
     let matches = [];
-    strings.forEach((str) => {
-        const found = str.match(regex);
-        if (found) {
-            matches = matches.concat(found);
-        }
+    // Use flatMap to collect all matches from all strings
+    return strings.flatMap((str) => {
+        const matches = str.match(regex);
+        console.log("MATCHES:", str, matches);
+        return matches ? matches : [];
     });
-    return matches;
 }
 async function run() {
     var _a;
+    console.log("TEST 1");
     const token = (0, core_1.getInput)("gh-token");
     const octokit = (0, github_1.getOctokit)(token);
     const pr = github_1.context.payload.pull_request;
