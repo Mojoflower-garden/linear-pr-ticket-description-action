@@ -49,12 +49,9 @@ async function listCommits(prNumber: number) {
 
 function findMatchingStrings(strings: string[]): string[] {
   const regex = /mojo-\d+/gi; // Regular expression to match "MOJO-%number%" (case insensitive)
-  let matches: string[] = [];
-
   // Use flatMap to collect all matches from all strings
   return strings.flatMap((str) => {
     const matches = str.match(regex);
-    console.log("MATCHES:", str, matches);
     return matches ? matches : [];
   });
 }
@@ -80,6 +77,9 @@ function updatePRDescription(
     /## Linear Tickets Found([\s\S]*?)<!-- === LINEAR TICKETS FENCE START === -->[\s\S]*?<!-- === LINEAR TICKETS FENCE END === -->/gi;
   const cleanedDescription = currentDescription.replace(regex, "");
 
+  console.log("CURRENT DESCT:", currentDescription);
+  console.log("CLEANED DESCRIPTION:", cleanedDescription);
+
   // Concatenate cleaned description with new section
   const updatedDescription =
     cleanedDescription.trim() + "\n\n" + newSection.trim();
@@ -88,7 +88,6 @@ function updatePRDescription(
 }
 
 export async function run() {
-  console.log("TEST 1");
   const token = getInput("gh-token");
   const octokit = getOctokit(token);
   const pr = context.payload.pull_request;
