@@ -33,7 +33,15 @@ function runGHCommand(command: string): Promise<string> {
   });
 }
 
-export async function listCommits(prNumber: number) {
+function findMatchingStrings(strings: string[], regex: RegExp): string[] {
+  // Use flatMap to collect all matches from all strings
+  return strings.flatMap((str) => {
+    const matches = str.match(regex);
+    return matches ? matches : [];
+  });
+}
+
+async function listCommits(prNumber: number) {
   try {
     const result = await runGHCommand(
       `gh pr view ${prNumber} --json commits` // Note there is probably some limit to how many commits this returns. But I don't know where that is documented.
@@ -45,18 +53,7 @@ export async function listCommits(prNumber: number) {
   }
 }
 
-function findMatchingStrings(strings: string[], regex: RegExp): string[] {
-  // Use flatMap to collect all matches from all strings
-  return strings.flatMap((str) => {
-    const matches = str.match(regex);
-    return matches ? matches : [];
-  });
-}
-
-export function generatePRDescription(
-  strings: string[],
-  matchRegex: RegExp
-): string {
+function generatePRDescription(strings: string[], matchRegex: RegExp): string {
   const matches = findMatchingStrings(strings, matchRegex);
 
   if (matches.length === 0) {
@@ -68,7 +65,7 @@ export function generatePRDescription(
   return description;
 }
 
-export function updatePRDescription(
+function updatePRDescription(
   currentDescription: string,
   newSection: string
 ): string {
@@ -82,3 +79,5 @@ export function updatePRDescription(
 
   return updatedDescription.trim();
 }
+
+export { updatePRDescription, generatePRDescription, listCommits };

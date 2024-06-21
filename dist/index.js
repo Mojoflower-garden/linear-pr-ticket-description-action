@@ -7,9 +7,9 @@
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.listCommits = listCommits;
-exports.generatePRDescription = generatePRDescription;
 exports.updatePRDescription = updatePRDescription;
+exports.generatePRDescription = generatePRDescription;
+exports.listCommits = listCommits;
 const child_process_1 = __nccwpck_require__(2081);
 // Function to run a GitHub CLI command
 function runGHCommand(command) {
@@ -23,6 +23,13 @@ function runGHCommand(command) {
         });
     });
 }
+function findMatchingStrings(strings, regex) {
+    // Use flatMap to collect all matches from all strings
+    return strings.flatMap((str) => {
+        const matches = str.match(regex);
+        return matches ? matches : [];
+    });
+}
 async function listCommits(prNumber) {
     try {
         const result = await runGHCommand(`gh pr view ${prNumber} --json commits` // Note there is probably some limit to how many commits this returns. But I don't know where that is documented.
@@ -33,13 +40,6 @@ async function listCommits(prNumber) {
     catch (error) {
         console.error('Error:', error);
     }
-}
-function findMatchingStrings(strings, regex) {
-    // Use flatMap to collect all matches from all strings
-    return strings.flatMap((str) => {
-        const matches = str.match(regex);
-        return matches ? matches : [];
-    });
 }
 function generatePRDescription(strings, matchRegex) {
     const matches = findMatchingStrings(strings, matchRegex);
