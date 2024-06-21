@@ -2,6 +2,8 @@ name: 'Linear ticket descriptions'
 
 on:
   pull_request:
+    branches:
+      - main
 
 jobs:
   ticketDescription:
