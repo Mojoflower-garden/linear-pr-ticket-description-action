@@ -1,13 +1,16 @@
-{
-  "compilerOptions":
-    {
-      "target": "ES2019",
-      "module": "commonjs",
-      "outDir": "lib",
-      "esModuleInterop": true,
-      "forceConsistentCasingInFileNames": true,
-      "strict": true,
-      "skipLibCheck": true,
-    },
-  "exclude": ["node_modules"],
-}
+name: "Linear ids in pr description"
+description: "Add linear ids from commits into description"
+author: "Turtle"
+
+inputs:
+  gh-token:
+    description: "The GitHub token for authentication."
+    required: true
+
+runs:
+  using: "node20"
+  main: "dist/index.js"
+
+branding:
+  icon: "activity"
+  color: "green"
