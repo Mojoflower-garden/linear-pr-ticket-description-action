@@ -2,7 +2,6 @@ name: 'Linear ticket descriptions'
 
 on:
   pull_request:
-    types: [opened, reopened]
 
 jobs:
   ticketDescription:
