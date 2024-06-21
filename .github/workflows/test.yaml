@@ -1,14 +1,14 @@
-name: "Waver"
+name: "Linear ticket descriptions"
 
 on:
   pull_request:
     types: [opened, reopened]
 
 jobs:
-  wave:
+  ticketDescription:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: ./
         with:
-          user-gh-token: ${{ secrets.GITHUB_TOKEN }}
+          gh-token: ${{ secrets.GITHUB_TOKEN }}

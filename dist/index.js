@@ -33757,7 +33757,7 @@ async function run() {
         }
         let messages;
         try {
-            console.log("FETCHING pulls");
+            console.log("FETCHING pulls 123");
             // Fetch the pull request details including commits
             const { data: pullRequest } = await octokit.rest.pulls.get({
                 owner: github_1.context.repo.owner,
