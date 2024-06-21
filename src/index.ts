@@ -49,7 +49,16 @@ async function listCommits(prNumber: number) {
 
 function findMatchingStrings(strings: string[]): string[] {
   const regex = /mojo-\d+/i; // Regular expression to match "MOJO-%number%" (case insensitive)
-  return strings.filter((str) => regex.test(str));
+  let matches: string[] = [];
+
+  strings.forEach((str) => {
+    const found = str.match(regex);
+    if (found) {
+      matches = matches.concat(found);
+    }
+  });
+
+  return matches;
 }
 
 export async function run() {
