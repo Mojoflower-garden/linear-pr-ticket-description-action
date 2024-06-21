@@ -77,9 +77,7 @@ function updatePRDescription(
     /<!-- === LINEAR TICKETS FENCE START === -->[\s\S]*?<!-- === LINEAR TICKETS FENCE END === -->/gi;
   const cleanedDescription = currentDescription.replace(regex, "");
 
-  console.log("CURRENT DESCT:", currentDescription);
-  console.log("CLEANED DESCRIPTION:", cleanedDescription);
-
+  console.log("CLEANeD description", cleanedDescription);
   // Concatenate cleaned description with new section
   const updatedDescription =
     cleanedDescription.trim() + "\n\n" + newSection.trim();
@@ -100,11 +98,8 @@ export async function run() {
     let messages: string[];
 
     try {
-      console.log("FETCHING pulls");
-
       const commitHeadlines = await listCommits(pr.number);
 
-      console.log("COMMIT HEADLINES:", commitHeadlines);
       const matches = findMatchingStrings(commitHeadlines ?? []);
 
       if (matches.length > 0) {
@@ -123,28 +118,6 @@ ${generatePRDescription(matches)}\n
           body: updatePRDescription(pr.body ?? "", fencedSection),
         });
       }
-      // Fetch the pull request details including commits
-      //   const { data: pullRequest } = await octokit.rest.pulls.get({
-      //     owner: context.repo.owner,
-      //     repo: context.repo.repo,
-      //     pull_number: pr.number,
-      //   });
-
-      //   const createdAt = pullRequest.created_at;
-      //   const baseBranch = pullRequest.head.ref;
-
-      //   console.log("FETCHING COMMITS", baseBranch, createdAt);
-      //   // Fetch commits from the base branch after the pull request was created
-      //   const { data: commits } = await octokit.rest.repos.listCommits({
-      //     owner: context.repo.owner,
-      //     repo: context.repo.repo,
-      //     sha: baseBranch,
-      //     since: createdAt,
-      //   });
-
-      //   // Filter commits to include only those part of the pull request
-      //   // Note: this assumes all commits on the branch after the PR creation are part of the PR
-      //   messages = commits.map((commit) => commit.commit.message);
     } catch (error: any) {
       console.error("Error fetching commit messages:", error?.message);
       throw error;
