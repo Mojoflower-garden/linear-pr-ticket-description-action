@@ -8,7 +8,7 @@ This action finds all ticket ids in commit headlines that are included in a spec
 
 First, visit your repository's Settings -> Actions -> General, and select 'Read and write permissions' in 'Workflow permissions'.
 
-Then add set up a job as below:
+Then set up a job as below (specifying the version if you want):
 
 ```yaml
 on:
@@ -19,7 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: ./
+      - name: Ticket ids from commit in pr description
+        uses: Mojoflower-garden/pr-ticket-description-action@main
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
