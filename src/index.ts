@@ -74,7 +74,7 @@ function updatePRDescription(
 ): string {
   // Remove the existing "Linear Tickets Found" section
   const regex =
-    /## Linear Tickets Found([\s\S]*?)<!-- === LINEAR TICKETS FENCE START === -->[\s\S]*?<!-- === LINEAR TICKETS FENCE END === -->/gi;
+    /<!-- === LINEAR TICKETS FENCE START === -->[\s\S]*?<!-- === LINEAR TICKETS FENCE END === -->/gi;
   const cleanedDescription = currentDescription.replace(regex, "");
 
   console.log("CURRENT DESCT:", currentDescription);
@@ -109,9 +109,10 @@ export async function run() {
 
       if (matches.length > 0) {
         const fencedSection = `
-## Linear Tickets Found 2\n\n
+        <!-- === LINEAR TICKETS FENCE START === -->\n
 
-<!-- === LINEAR TICKETS FENCE START === -->\n
+## Linear Tickets Found\n\n
+
 ${generatePRDescription(matches)}\n
 <!-- === LINEAR TICKETS FENCE END === -->
 `;
