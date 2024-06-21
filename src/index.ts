@@ -93,14 +93,19 @@ export async function run() {
       const matches = findMatchingStrings(commitHeadlines ?? []);
 
       if (matches.length > 0) {
-        const newDescription = `# ================ PR Description Start ===================\n${generatePRDescription(
-          matches
-        )}\n# ================ PR Description End ===================`;
+        const fencedSection = `
+        ${pr.body}}\n
+## Linear Tickets Found\n\n
+
+<!-- === LINEAR TICKETS FENCE START === -->\n
+${generatePRDescription(matches)}\n
+<!-- === LINEAR TICKETS FENCE END === -->
+`;
         await octokit.rest.issues.update({
           issue_number: context.issue.number,
           owner: context.repo.owner,
           repo: context.repo.repo,
-          body: newDescription,
+          body: fencedSection,
         });
       }
       // Fetch the pull request details including commits
