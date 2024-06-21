@@ -71,6 +71,22 @@ function generatePRDescription(strings: string[]): string {
   return description;
 }
 
+function updatePRDescription(
+  currentDescription: string,
+  newSection: string
+): string {
+  // Remove the existing "Linear Tickets Found" section
+  const regex =
+    /## Linear Tickets Found([\s\S]*?)<!-- === LINEAR TICKETS FENCE START === -->[\s\S]*?<!-- === LINEAR TICKETS FENCE END === -->/gi;
+  const cleanedDescription = currentDescription.replace(regex, "");
+
+  // Concatenate cleaned description with new section
+  const updatedDescription =
+    cleanedDescription.trim() + "\n\n" + newSection.trim();
+
+  return updatedDescription.trim();
+}
+
 export async function run() {
   console.log("TEST 1");
   const token = getInput("gh-token");
@@ -95,7 +111,7 @@ export async function run() {
       if (matches.length > 0) {
         const fencedSection = `
         ${pr.body}}\n
-## Linear Tickets Found\n\n
+## Linear Tickets Found 2\n\n
 
 <!-- === LINEAR TICKETS FENCE START === -->\n
 ${generatePRDescription(matches)}\n
@@ -105,7 +121,7 @@ ${generatePRDescription(matches)}\n
           issue_number: context.issue.number,
           owner: context.repo.owner,
           repo: context.repo.repo,
-          body: fencedSection,
+          body: updatePRDescription(pr.body ?? "", fencedSection),
         });
       }
       // Fetch the pull request details including commits

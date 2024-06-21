@@ -33797,8 +33797,16 @@ function generatePRDescription(strings) {
     const description = `ref ${matches.join(", ")}`;
     return description;
 }
+function updatePRDescription(currentDescription, newSection) {
+    // Remove the existing "Linear Tickets Found" section
+    const regex = /## Linear Tickets Found([\s\S]*?)<!-- === LINEAR TICKETS FENCE START === -->[\s\S]*?<!-- === LINEAR TICKETS FENCE END === -->/gi;
+    const cleanedDescription = currentDescription.replace(regex, "");
+    // Concatenate cleaned description with new section
+    const updatedDescription = cleanedDescription.trim() + "\n\n" + newSection.trim();
+    return updatedDescription.trim();
+}
 async function run() {
-    var _a;
+    var _a, _b;
     console.log("TEST 1");
     const token = (0, core_1.getInput)("gh-token");
     const octokit = (0, github_1.getOctokit)(token);
@@ -33816,7 +33824,7 @@ async function run() {
             if (matches.length > 0) {
                 const fencedSection = `
         ${pr.body}}\n
-## Linear Tickets Found\n\n
+## Linear Tickets Found 2\n\n
 
 <!-- === LINEAR TICKETS FENCE START === -->\n
 ${generatePRDescription(matches)}\n
@@ -33826,7 +33834,7 @@ ${generatePRDescription(matches)}\n
                     issue_number: github_1.context.issue.number,
                     owner: github_1.context.repo.owner,
                     repo: github_1.context.repo.repo,
-                    body: fencedSection,
+                    body: updatePRDescription((_a = pr.body) !== null && _a !== void 0 ? _a : "", fencedSection),
                 });
             }
             // Fetch the pull request details including commits
@@ -33856,7 +33864,7 @@ ${generatePRDescription(matches)}\n
         // console.log("Commit messages in the pull request:", messages);
     }
     catch (error) {
-        (0, core_1.setFailed)((_a = error === null || error === void 0 ? void 0 : error.message) !== null && _a !== void 0 ? _a : "Unknown error");
+        (0, core_1.setFailed)((_b = error === null || error === void 0 ? void 0 : error.message) !== null && _b !== void 0 ? _b : "Unknown error");
     }
 }
 run();
