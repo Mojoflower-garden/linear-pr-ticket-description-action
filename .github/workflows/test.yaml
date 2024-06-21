@@ -15,3 +15,5 @@ jobs:
         with:
           gh-token: ${{ secrets.GITHUB_TOKEN }}
           ticket-regex: "mojo-\\d+"
+          section-title: 'Liner Tickets Found Title'
+          magic-word: 'references'

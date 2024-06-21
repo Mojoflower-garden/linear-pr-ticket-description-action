@@ -9,10 +9,10 @@ import {
 export async function run() {
   const token = getInput('gh-token');
   const ticketRegex = getInput('ticket-regex');
+  const sectionTitle = getInput('section-title');
+  const magicWord = getInput('magic-word');
   const octokit = getOctokit(token);
   const pr = context.payload.pull_request;
-
-  console.log('REGEX:', ticketRegex);
 
   try {
     if (!pr) {
@@ -25,15 +25,21 @@ export async function run() {
       const regexPattern = ticketRegex; // Example regex pattern, adjust as needed
       const regex = new RegExp(regexPattern, 'gi');
 
-      const prDescription = generatePRDescription(commitHeadlines ?? [], regex);
+      const prDescription = generatePRDescription(
+        commitHeadlines ?? [],
+        regex,
+        magicWord
+      );
+
+      if (!prDescription) return;
 
       const fencedSection = `
-<!-- === LINEAR TICKETS FENCE START === -->\n
+<!-- === TICKETS FENCE START === -->\n
 
-## Linear Tickets Found\n\n
+## ${sectionTitle ?? 'Tickets found'}\n\n
 ${prDescription}\n
 
-<!-- === LINEAR TICKETS FENCE END === -->
+<!-- === TICKETS FENCE END === -->
         `;
 
       await octokit.rest.issues.update({

@@ -52,15 +52,22 @@ async function listCommits(prNumber: number) {
   }
 }
 
-function generatePRDescription(strings: string[], matchRegex: RegExp): string {
+function generatePRDescription(
+  strings: string[],
+  matchRegex: RegExp,
+  magicWord?: string
+): string | undefined {
   const matches = findMatchingStrings(strings, matchRegex);
 
   if (matches.length === 0) {
-    return 'No MOJO references found in this pull request.';
+    console.log('No ticket found in any commits for this pr');
+    return;
   }
 
   // Join matches with comma and space
-  const description = `ref ${matches.join(', ')}`;
+  const description = `${magicWord ? magicWord + ' ' : ''}${matches.join(
+    ', '
+  )}`;
   return description;
 }
 
@@ -70,7 +77,7 @@ function updatePRDescription(
 ): string {
   // Remove the existing "Linear Tickets Found" section
   const regex =
-    /<!-- === LINEAR TICKETS FENCE START === -->[\s\S]*?<!-- === LINEAR TICKETS FENCE END === -->/gi;
+    /<!-- === TICKETS FENCE START === -->[\s\S]*?<!-- === TICKETS FENCE END === -->/gi;
   const cleanedDescription = currentDescription.replace(regex, '');
   // Concatenate cleaned description with new section
   const updatedDescription =

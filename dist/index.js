@@ -40,18 +40,19 @@ async function listCommits(prNumber) {
         console.error('Error:', error);
     }
 }
-function generatePRDescription(strings, matchRegex) {
+function generatePRDescription(strings, matchRegex, magicWord) {
     const matches = findMatchingStrings(strings, matchRegex);
     if (matches.length === 0) {
-        return 'No MOJO references found in this pull request.';
+        console.log('No ticket found in any commits for this pr');
+        return;
     }
     // Join matches with comma and space
-    const description = `ref ${matches.join(', ')}`;
+    const description = `${magicWord ? magicWord + ' ' : ''}${matches.join(', ')}`;
     return description;
 }
 function updatePRDescription(currentDescription, newSection) {
     // Remove the existing "Linear Tickets Found" section
-    const regex = /<!-- === LINEAR TICKETS FENCE START === -->[\s\S]*?<!-- === LINEAR TICKETS FENCE END === -->/gi;
+    const regex = /<!-- === TICKETS FENCE START === -->[\s\S]*?<!-- === TICKETS FENCE END === -->/gi;
     const cleanedDescription = currentDescription.replace(regex, '');
     // Concatenate cleaned description with new section
     const updatedDescription = cleanedDescription.trim() + '\n\n' + newSection.trim();
@@ -33819,9 +33820,10 @@ async function run() {
     var _a, _b;
     const token = (0, core_1.getInput)('gh-token');
     const ticketRegex = (0, core_1.getInput)('ticket-regex');
+    const sectionTitle = (0, core_1.getInput)('section-title');
+    const magicWord = (0, core_1.getInput)('magic-word');
     const octokit = (0, github_1.getOctokit)(token);
     const pr = github_1.context.payload.pull_request;
-    console.log('REGEX:', ticketRegex);
     try {
         if (!pr) {
             throw new Error('This action can only be run on Pull Requests');
@@ -33830,14 +33832,16 @@ async function run() {
             const commitHeadlines = await (0, helpers_1.listCommits)(pr.number);
             const regexPattern = ticketRegex; // Example regex pattern, adjust as needed
             const regex = new RegExp(regexPattern, 'gi');
-            const prDescription = (0, helpers_1.generatePRDescription)(commitHeadlines !== null && commitHeadlines !== void 0 ? commitHeadlines : [], regex);
+            const prDescription = (0, helpers_1.generatePRDescription)(commitHeadlines !== null && commitHeadlines !== void 0 ? commitHeadlines : [], regex, magicWord);
+            if (!prDescription)
+                return;
             const fencedSection = `
-<!-- === LINEAR TICKETS FENCE START === -->\n
+<!-- === TICKETS FENCE START === -->\n
 
-## Linear Tickets Found\n\n
+## ${sectionTitle !== null && sectionTitle !== void 0 ? sectionTitle : 'Tickets found'}\n\n
 ${prDescription}\n
 
-<!-- === LINEAR TICKETS FENCE END === -->
+<!-- === TICKETS FENCE END === -->
         `;
             await octokit.rest.issues.update({
                 issue_number: github_1.context.issue.number,

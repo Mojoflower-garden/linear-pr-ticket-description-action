@@ -9,6 +9,12 @@ inputs:
   ticket-regex:
     description: 'The regex for the ticket ids that will be found in commits and inserted into the description.'
     required: true
+  section-title:
+    description: 'The title for the section in the description where the ticket ids are pasted'
+    required: false
+  magic-word:
+    description: 'This is pasted in front of the list of tickets'
+    required: false
 
 runs:
   using: 'node20'
